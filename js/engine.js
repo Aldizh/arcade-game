@@ -45,8 +45,14 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        update(dt);
-        render();
+        if (player.lives == 0) {
+            reset();
+            return;
+        }
+        else {
+            update(dt);
+            render();
+        }
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -135,7 +141,7 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
+        ctx.clearRect(0, 0, 850, 40);
         renderEntities();
     }
 
@@ -159,7 +165,10 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        player.reset();
+        allEnemies.forEach(function(enemy) {
+            enemy.reset();
+        });
     }
 
     /* Go ahead and load all of the images we know we're going to need to
