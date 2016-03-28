@@ -1,68 +1,74 @@
-// Enemies our player must avoid
-var Enemy = function(x, y, speed) {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
+'use strict';
+class Contestant {
+  constructor(x, y, sprite) {
     this.x = x;
     this.y = y;
+    this.sprite = sprite;
+  }
+}
+
+class Enemy extends Contestant {
+  constructor(x, y, speed, width, height, sprite) {
+    super(x, y, sprite);
+    this.width = width;
+    this.height = height;
     this.speed = speed;
-    this.sprite = 'images/enemy-bug.png';
-};
+  }
+}
+
+class Player extends Contestant {
+    constructor(x, y, sprite) {
+        super(x, y, sprite);
+        this.lives = 3;
+    }
+}
+
+Contestant.prototype.render = function(){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
+//Constants
+var PLAYER_X = 200;
+var PLAYER_Y = 400;
+
 
 //Reset enemy's psotion to the start
 Enemy.prototype.reset = function(){
     if (this.x > (500)){
         this.x -= (500);
-        this.y = Math.random() * 300
+        this.y = Math.random() * 300;
     }
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
     this.x += this.speed * dt;
     this.reset();
 };
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
-var Player = function(x, y) {
-    this.x = x;
-    this.y = y;
-    this.lives = 3;
-    this.sprite = "images/char-boy.png";
-}
 
 Player.prototype.update = function() {
     //First we need to check for collisions
     this.checkCollisions();
 
-    // Her we make sure player doesn't go out of bounds
+    // Here we make sure player doesn't go out of bounds
+    var max_bound = 400;
     if (this.x < 0) {
         this.x = 0;
-    } else if (this.x > 400) {
-        this.x = 400;
+    } else if (this.x > max_bound) {
+        this.x = max_bound;
     } else if (this.y === 0) {
-        this.y = 400;
+        this.y = max_bound;
     } else if (this.y < 0) {
         this.y = 0;
-    } else if (this.y > 400) {
-        this.y = 400;
+    } else if (this.y > max_bound) {
+        this.y = max_bound;
     }
 }
 
 Player.prototype.render = function() {
+    //Might be possible to do partial inheritance here
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     ctx.font = '25px serif';
     if (this.lives > 0)
@@ -89,36 +95,44 @@ Player.prototype.handleInput = function(key){
     }
 }
 
+//Reset Values
+Player.prototype.reset = function(){
+    this.x = PLAYER_X;
+    this.y = PLAYER_Y;
+}
+
 //Check to see whether the player has collided
 //with an enemy reset the player's position if so.
 Player.prototype.checkCollisions = function() {
+    //setting this a little lower than the enemy dimensions
+    var width = 40;
+    var height = 40;
+
     for (i=0; i < allEnemies.length; i++) {
-        if ( Math.abs(this.x - allEnemies[i].x) < 30 && Math.abs(this.y - allEnemies[i].y) < 30) {
-            this.lives--;
-            if (this.lives > 0)
-                alert("Collided: " + this.lives + " lives left");
-            else
-                alert("Ouch, Game over");
-            this.x = 200;
-            this.y = 400;
-            this.render();
+        if (this.x < allEnemies[i].x + allEnemies[i].width &&
+            this.x + width > allEnemies[i].x &&
+            this.y < allEnemies[i].y + allEnemies[i].height &&
+            height + this.y > allEnemies[i].y) {
+                // collision detected!
+                this.lives--;
+                if (this.lives > 0)
+                    alert("Collided: " + this.lives + " lives left");
+                else
+                    alert("Ouch, Game over");
+                this.reset();
+                this.render();
         }
     }
 }
 
-Player.prototype.reset = function(){
-    this.x = 200;
-    this.y = 400;
-}
+// Instantiating objects.
+var sprite = "images/char-boy.png";
+var player = new Player(PLAYER_X, PLAYER_Y, sprite);
 
-var player = new Player(200, 400);
-
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
 var allEnemies = [];
+sprite = 'images/enemy-bug.png';
 for (var i=0; i<=3; i++ ){
-    enemy = new Enemy(Math.random()*(-300),Math.random()*300,Math.floor(Math.random()*100)+20);
+    var enemy = new Enemy(Math.random()*(-300),Math.random()*300,Math.floor(Math.random()*100)+20, 50, 40, sprite);
     allEnemies.push(enemy);
 }
 
