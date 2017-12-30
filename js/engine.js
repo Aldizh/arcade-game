@@ -42,10 +42,10 @@ var Engine = (function(global) {
          */
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
-
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
+
         if (player.lives == 0) {
             reset();
             return;
@@ -101,7 +101,14 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        player.update();
+
+        // Ensure player doesn't sit idle. Since the browser will redraw
+        // roughly every .2 seconds we can adjust the player's time accordingly
+        // 60 ticks * 5 (for each seconds) = 300 extra ticks when the clock resets
+        player.time -= dt;
+        if (player.time <= 0) { player.lives -= 1; player.time += 60}
+
+        player.update(dt);
     }
 
     /* This function initially draws the "game level", it will then call

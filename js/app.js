@@ -20,6 +20,8 @@ class Player extends Contestant {
     constructor(x, y, sprite) {
         super(x, y, sprite);
         this.lives = 3;
+        this.score = 0;
+        this.time = 60;
     }
 }
 
@@ -48,7 +50,7 @@ Enemy.prototype.update = function(dt) {
 };
 
 
-Player.prototype.update = function() {
+Player.prototype.update = function(dt) {
     //First we need to check for collisions
     this.checkCollisions();
 
@@ -61,6 +63,8 @@ Player.prototype.update = function() {
     } else if (this.y === 0) {
         this.y = max_bound;
     } else if (this.y < 0) {
+        this.score += 1;
+        if (this.score >= 10) { this.lives += 1; this.score = 0; }
         this.y = 0;
     } else if (this.y > max_bound) {
         this.y = max_bound;
@@ -75,12 +79,14 @@ Player.prototype.render = function() {
         ctx.fillStyle = 'green';
     else
         ctx.fillStyle = 'red';
+    ctx.fillText('Countdown: ' + parseInt(this.time), 100, 40);
+    ctx.fillText('Score: ' + this.score, 300, 40);
     ctx.fillText('Lives: ' + this.lives, 400, 40);
 }
 
 Player.prototype.handleInput = function(key){
     switch (key) {
-        case 'left': 
+        case 'left':
             this.x = this.x - 100;
             break;
         case 'up':
@@ -132,7 +138,7 @@ var player = new Player(PLAYER_X, PLAYER_Y, sprite);
 var allEnemies = [];
 sprite = 'images/enemy-bug.png';
 for (var i=0; i<=3; i++ ){
-    var enemy = new Enemy(Math.random()*(-300),Math.random()*300,Math.floor(Math.random()*100)+20, 50, 40, sprite);
+    var enemy = new Enemy(Math.random()*(-300),Math.random()*300,Math.floor(Math.random()*100)+30, 40, 30, sprite);
     allEnemies.push(enemy);
 }
 
