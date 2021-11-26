@@ -1,19 +1,19 @@
 'use strict';
 class Contestant {
-  constructor(x, y, sprite) {
-    this.x = x;
-    this.y = y;
-    this.sprite = sprite;
-  }
+    constructor(x, y, sprite) {
+        this.x = x;
+        this.y = y;
+        this.sprite = sprite;
+    }
 }
 
 class Enemy extends Contestant {
-  constructor(x, y, speed, width, height, sprite) {
-    super(x, y, sprite);
-    this.width = width;
-    this.height = height;
-    this.speed = speed;
-  }
+    constructor(x, y, speed, width, height, sprite) {
+        super(x, y, sprite);
+        this.width = width;
+        this.height = height;
+        this.speed = speed;
+    }
 }
 
 class Player extends Contestant {
@@ -25,7 +25,7 @@ class Player extends Contestant {
     }
 }
 
-Contestant.prototype.render = function(){
+Contestant.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
@@ -35,8 +35,8 @@ var PLAYER_Y = 400;
 
 
 //Reset enemy's psotion to the start
-Enemy.prototype.reset = function(){
-    if (this.x > (500)){
+Enemy.prototype.reset = function () {
+    if (this.x > (500)) {
         this.x -= (500);
         this.y = Math.random() * 300;
     }
@@ -44,13 +44,13 @@ Enemy.prototype.reset = function(){
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
+Enemy.prototype.update = function (dt) {
     this.x += this.speed * dt;
     this.reset();
 };
 
 
-Player.prototype.update = function(dt) {
+Player.prototype.update = function (dt) {
     //First we need to check for collisions
     this.checkCollisions();
 
@@ -71,7 +71,7 @@ Player.prototype.update = function(dt) {
     }
 }
 
-Player.prototype.render = function() {
+Player.prototype.render = function () {
     //Might be possible to do partial inheritance here
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     ctx.font = '25px serif';
@@ -84,7 +84,7 @@ Player.prototype.render = function() {
     ctx.fillText('Lives: ' + this.lives, 400, 40);
 }
 
-Player.prototype.handleInput = function(key){
+Player.prototype.handleInput = function (key) {
     switch (key) {
         case 'left':
             this.x = this.x - 100;
@@ -102,31 +102,31 @@ Player.prototype.handleInput = function(key){
 }
 
 //Reset Values
-Player.prototype.reset = function(){
+Player.prototype.reset = function () {
     this.x = PLAYER_X;
     this.y = PLAYER_Y;
 }
 
 //Check to see whether the player has collided
 //with an enemy reset the player's position if so.
-Player.prototype.checkCollisions = function() {
+Player.prototype.checkCollisions = function () {
     //setting this a little lower than the enemy dimensions
     var width = 40;
     var height = 40;
 
-    for (i=0; i < allEnemies.length; i++) {
+    for (i = 0; i < allEnemies.length; i++) {
         if (this.x < allEnemies[i].x + allEnemies[i].width &&
             this.x + width > allEnemies[i].x &&
             this.y < allEnemies[i].y + allEnemies[i].height &&
             height + this.y > allEnemies[i].y) {
-                // collision detected!
-                this.lives--;
-                if (this.lives > 0)
-                    alert("Collided: " + this.lives + " lives left");
-                else
-                    alert("Ouch, Game over");
-                this.reset();
-                this.render();
+            // collision detected!
+            this.lives--;
+            if (this.lives > 0)
+                alert("Collided: " + this.lives + " lives left");
+            else
+                alert("Ouch, Game over");
+            this.reset();
+            this.render();
         }
     }
 }
@@ -137,15 +137,15 @@ var player = new Player(PLAYER_X, PLAYER_Y, sprite);
 
 var allEnemies = [];
 sprite = 'images/enemy-bug.png';
-for (var i=0; i<=3; i++ ){
-    var enemy = new Enemy(Math.random()*(-300),Math.random()*300,Math.floor(Math.random()*100)+30, 40, 30, sprite);
+for (var i = 0; i <= 3; i++) {
+    var enemy = new Enemy(Math.random() * (-300), Math.random() * 300, Math.floor(Math.random() * 100) + 30, 40, 30, sprite);
     allEnemies.push(enemy);
 }
 
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
+document.addEventListener('keyup', function (e) {
     var allowedKeys = {
         37: 'left',
         38: 'up',
