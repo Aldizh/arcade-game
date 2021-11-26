@@ -75,13 +75,12 @@ Player.prototype.render = function () {
     //Might be possible to do partial inheritance here
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     ctx.font = '25px serif';
-    if (this.lives > 0)
-        ctx.fillStyle = 'green';
-    else
-        ctx.fillStyle = 'red';
-    ctx.fillText('Countdown: ' + parseInt(this.time), 100, 40);
-    ctx.fillText('Score: ' + this.score, 300, 40);
-    ctx.fillText('Lives: ' + this.lives, 400, 40);
+
+    if (this.lives === 0 || this.time < 10) ctx.fillStyle = 'red';
+    else ctx.fillStyle = 'green';
+    ctx.fillText('Countdown: ' + parseInt(this.time), 50, 40);
+    ctx.fillText('Score: ' + this.score, 250, 40);
+    ctx.fillText('Lives: ' + this.lives, 350, 40);
 }
 
 Player.prototype.handleInput = function (key) {
