@@ -22,6 +22,7 @@ class Player extends Contestant {
         this.lives = 3;
         this.score = 0;
         this.time = 60;
+        this.lastScoringTime = 0;
     }
 }
 
@@ -29,12 +30,12 @@ Contestant.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
-//Constants
+// Constants
 var PLAYER_X = 200;
 var PLAYER_Y = 400;
 
 
-//Reset enemy's psotion to the start
+// Reset enemy's psotion to the start
 Enemy.prototype.reset = function () {
     if (this.x > (500)) {
         this.x -= (500);
@@ -51,11 +52,12 @@ Enemy.prototype.update = function (dt) {
 
 
 Player.prototype.update = function (dt) {
-    //First we need to check for collisions
-    this.checkCollisions();
+    // First we need to check for collisions
+    this.checkCollisions(dt);
 
     // Here we make sure player doesn't go out of bounds
     var max_bound = 400;
+
     if (this.x < 0) {
         this.x = 0;
     } else if (this.x > max_bound) {
@@ -63,8 +65,6 @@ Player.prototype.update = function (dt) {
     } else if (this.y === 0) {
         this.y = max_bound;
     } else if (this.y < 0) {
-        this.score += 1;
-        if (this.score >= 10) { this.lives += 1; this.score = 0; }
         this.y = 0;
     } else if (this.y > max_bound) {
         this.y = max_bound;
@@ -108,7 +108,7 @@ Player.prototype.reset = function () {
 
 //Check to see whether the player has collided
 //with an enemy reset the player's position if so.
-Player.prototype.checkCollisions = function () {
+Player.prototype.checkCollisions = function (dt) {
     //setting this a little lower than the enemy dimensions
     var width = 40;
     var height = 40;
@@ -127,6 +127,12 @@ Player.prototype.checkCollisions = function () {
             this.reset();
             this.render();
         }
+    }
+
+    // this means we got to the water since y postionioning is at the very top
+    if (this.y === 0) {
+        this.score += 1;
+        if (this.score % 50 === 0) this.lives += 1
     }
 }
 
